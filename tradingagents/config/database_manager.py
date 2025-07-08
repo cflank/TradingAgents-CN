@@ -328,6 +328,47 @@ class DatabaseManager:
 
         return cleared_count
 
+    def cache_set(self, key, value, ttl=None):
+        """设置缓存"""
+        if not self.redis_available or not self.redis_client:
+            return False
+        import json
+        try:
+            data = json.dumps(value, ensure_ascii=False)
+            if ttl:
+                self.redis_client.setex(key, ttl, data)
+            else:
+                self.redis_client.set(key, data)
+            return True
+        except Exception as e:
+            self.logger.error(f"cache_set error: {e}")
+            return False
+
+    def cache_get(self, key):
+        """获取缓存"""
+        if not self.redis_available or not self.redis_client:
+            return None
+        import json
+        try:
+            data = self.redis_client.get(key)
+            if data:
+                return json.loads(data)
+            return None
+        except Exception as e:
+            self.logger.error(f"cache_get error: {e}")
+            return None
+
+    def cache_delete(self, key):
+        """删除缓存"""
+        if not self.redis_available or not self.redis_client:
+            return False
+        try:
+            self.redis_client.delete(key)
+            return True
+        except Exception as e:
+            self.logger.error(f"cache_delete error: {e}")
+            return False
+
 
 # 全局数据库管理器实例
 _database_manager = None

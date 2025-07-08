@@ -12,13 +12,13 @@ from datetime import datetime
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
+from tradingagents.config.database_manager import *
+
 def init_mongodb():
     """初始化MongoDB数据库"""
     print("📊 初始化MongoDB数据库...")
     
     try:
-        from tradingagents.config.database_manager import get_database_manager
-
         db_manager = get_database_manager()
 
         if not db_manager.is_mongodb_available():
@@ -134,8 +134,6 @@ def init_redis():
     print("\n📦 初始化Redis缓存...")
     
     try:
-        from tradingagents.config.database_manager import get_database_manager
-
         db_manager = get_database_manager()
 
         if not db_manager.is_redis_available():
@@ -212,8 +210,6 @@ def test_database_connection():
     print("\n🔗 测试数据库连接...")
     
     try:
-        from tradingagents.dataflows.database_manager import get_database_manager
-        
         db_manager = get_database_manager()
         
         # 测试MongoDB连接
