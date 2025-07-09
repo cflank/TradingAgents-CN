@@ -83,19 +83,24 @@ class TradingAgentsGraph:
               self.config["llm_provider"].lower() == "alibaba" or
               "dashscope" in self.config["llm_provider"].lower() or
               "阿里百炼" in self.config["llm_provider"]):
+            api_key = self.config.get('api_key')
+            if not api_key or not isinstance(api_key, str) or not api_key.strip():
+                raise ValueError("DashScope API Key 为空，请在侧边栏输入有效密钥")
             self.deep_thinking_llm = ChatDashScope(
                 model=self.config["deep_think_llm"],
                 temperature=0.1,
-                max_tokens=2000
+                max_tokens=2000,
+                api_key=api_key
             )
             self.quick_thinking_llm = ChatDashScope(
                 model=self.config["quick_think_llm"],
                 temperature=0.1,
-                max_tokens=2000
+                max_tokens=2000,
+                api_key=api_key
             )
             # 为ReAct Agent创建Tongyi LLM（支持工具调用）
             from langchain_community.llms import Tongyi
-            self.react_llm = Tongyi()
+            self.react_llm = Tongyi(dashscope_api_key=api_key)
             # 确保使用正确的通义千问模型名称
             quick_model = self.config["quick_think_llm"]
             if quick_model in ["gpt-4o-mini", "o4-mini"]:  # 如果还是默认的OpenAI模型名

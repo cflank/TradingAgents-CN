@@ -1,0 +1,209 @@
+# Cursor Rules for Children Story App
+
+## Project Overview
+This is a React Native mobile app for children that converts hand-drawn pictures into interactive stories using AI. The app features a colorful, gradient UI design with specific visual requirements matching the provided mockups.
+
+## UI Design Requirements
+
+### Color Scheme & Gradients
+- Primary gradient: Pink (#E91E63) to Cyan (#00BCD4) to Purple (#9C27B0)
+- Background: Always use gradient backgrounds, never solid colors
+- Accent colors: Bright yellow (#FFEB3B), orange (#FF9800)
+- Text: White (#FFFFFF) for main text, semi-transparent white for secondary text
+
+### Visual Style Guidelines
+- **Gradient Backgrounds**: Every screen must have pink-to-cyan-to-purple gradient background
+- **Rounded Corners**: All buttons, cards, and containers use border radius of 20px minimum
+- **Floating Elements**: UI elements should appear to float over the gradient background
+- **Icons**: Use Lucide React icons, white color, size 24-32px
+- **Typography**: 
+  - Headers: Bold, white, 24-28px
+  - Body text: Regular, white/semi-transparent white, 16-18px
+  - Small text: 12-14px, semi-transparent white
+- **Shadows**: Use subtle drop shadows for depth (elevation effect)
+- **Spacing**: Generous padding and margins (16-24px standard)
+
+### Specific UI Components
+- **Navigation**: Bottom tab bar with gradient background, white icons
+- **Buttons**: Rounded rectangles with subtle transparency, white text/icons
+- **Cards**: Semi-transparent white backgrounds with rounded corners
+- **Input Fields**: Rounded with semi-transparent white background
+- **Loading States**: Use animated gradients and playful loading indicators
+
+## Technical Stack
+
+### Frontend (React Native)
+- Framework: React Native 0.72+
+- Navigation: @react-navigation/native, @react-navigation/bottom-tabs
+- State Management: @reduxjs/toolkit, react-redux
+- UI Components: Custom components following the gradient design system
+- Styling: StyleSheet with gradient backgrounds using react-native-linear-gradient
+- Icons: lucide-react-native
+- Image Handling: react-native-image-picker, react-native-image-crop-picker
+- Drawing Canvas: react-native-sketch-canvas or @react-native-community/art
+- Animations: react-native-reanimated
+
+### Backend (Node.js)
+- Runtime: Node.js 18+
+- Framework: Express.js
+- Database: PostgreSQL with Prisma ORM
+- Cache: Redis
+- File Storage: AWS S3 or local storage for development
+- AI Integration: OpenAI API (GPT-4 Vision, GPT-4, DALL-E 3)
+- Queue: Bull for background AI processing
+
+### Development Environment
+- OS: Windows 11
+- IDE: Cursor with React Native debugging
+- Emulator: Android Studio AVD or physical device
+- Version Control: Git
+
+## Code Style & Conventions
+
+### File Structure
+```
+src/
+├── components/          # Reusable UI components
+│   ├── common/         # Common components (buttons, inputs, etc.)
+│   ├── drawing/        # Drawing canvas components
+│   ├── chat/          # Chat interface components
+│   └── story/         # Story viewing components
+├── screens/            # Main screen components
+├── navigation/         # Navigation configuration
+├── services/          # API calls and business logic
+├── store/             # Redux store and slices
+├── styles/            # Shared styles and themes
+├── utils/             # Helper functions
+└── types/             # TypeScript type definitions
+```
+
+### Naming Conventions
+- Components: PascalCase (e.g., `DrawingCanvas.tsx`)
+- Files: camelCase for utilities, PascalCase for components
+- Functions: camelCase
+- Constants: UPPER_SNAKE_CASE
+- Styles: camelCase
+
+### Code Standards
+- Use TypeScript for type safety
+- Use functional components with hooks
+- Implement proper error handling
+- Use async/await for asynchronous operations
+- Follow React Native performance best practices
+- Implement proper loading states and error boundaries
+
+## Component Guidelines
+
+### Gradient Background Wrapper
+Every screen should use a gradient background component:
+```tsx
+<LinearGradient
+  colors={['#E91E63', '#00BCD4', '#9C27B0']}
+  style={styles.gradientBackground}
+>
+  {/* Screen content */}
+</LinearGradient>
+```
+
+### Floating Card Pattern
+Use this pattern for content containers:
+```tsx
+<View style={styles.floatingCard}>
+  {/* Card content */}
+</View>
+
+const styles = StyleSheet.create({
+  floatingCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 20,
+    padding: 20,
+    margin: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+});
+```
+
+### Button Styling
+Standard button appearance:
+```tsx
+<TouchableOpacity style={styles.primaryButton}>
+  <Text style={styles.buttonText}>Button Text</Text>
+</TouchableOpacity>
+
+const styles = StyleSheet.create({
+  primaryButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+```
+
+## AI Integration Guidelines
+
+### Image Analysis Flow
+1. User uploads/draws image
+2. Convert to base64
+3. Send to GPT-4 Vision for analysis
+4. Store analysis result
+5. Initiate chat conversation
+
+### Chat Implementation
+- Use GPT-4 for child-friendly conversations
+- Maintain conversation context
+- Implement typing indicators
+- Handle network errors gracefully
+
+### Story Generation
+- Combine image analysis + chat context
+- Generate story with GPT-4
+- Create illustrations with DALL-E 3
+- Format as readable story with images
+
+## Performance Considerations
+- Implement image compression before upload
+- Use lazy loading for story images
+- Cache AI responses when appropriate
+- Optimize gradient rendering performance
+- Implement proper memory management for images
+
+## Testing Requirements
+- Unit tests for utility functions
+- Component testing with React Native Testing Library
+- Integration tests for AI API calls
+- Manual testing on both Android and iOS
+
+## Development Workflow
+1. Start with UI mockup implementation
+2. Implement core navigation
+3. Add drawing/upload functionality
+4. Integrate AI services
+5. Implement story generation
+6. Add profile and history features
+7. Performance optimization
+8. Testing and debugging
+
+## Error Handling
+- Network error handling with retry mechanism
+- AI API error handling with fallback messages
+- Image processing error handling
+- User-friendly error messages
+- Crash reporting and logging
+
+When generating code, always prioritize:
+1. Matching the exact visual design from mockups
+2. Child-friendly UX/UI
+3. Performance optimization
+4. Error handling
+5. Code maintainability

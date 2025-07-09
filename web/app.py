@@ -24,7 +24,7 @@ from components.sidebar import render_sidebar
 from components.header import render_header
 from components.analysis_form import render_analysis_form
 from components.results_display import render_results
-from utils.api_checker import check_api_keys
+# from utils.api_checker import check_api_keys  # 移除
 from utils.analysis_runner import run_stock_analysis, validate_analysis_params, format_analysis_results
 from utils.progress_tracker import StreamlitProgressDisplay, create_progress_callback
 
@@ -232,47 +232,6 @@ def main():
         return
 
     # 默认显示股票分析页面
-    # 检查API密钥
-    api_status = check_api_keys()
-    
-    if not api_status['all_configured']:
-        st.error("⚠️ API密钥配置不完整，请先配置必要的API密钥")
-        
-        with st.expander("📋 API密钥配置指南", expanded=True):
-            st.markdown("""
-            ### 🔑 必需的API密钥
-            
-            1. **阿里百炼API密钥** (DASHSCOPE_API_KEY)
-               - 获取地址: https://dashscope.aliyun.com/
-               - 用途: AI模型推理
-            
-            2. **金融数据API密钥** (FINNHUB_API_KEY)  
-               - 获取地址: https://finnhub.io/
-               - 用途: 获取股票数据
-            
-            ### ⚙️ 配置方法
-            
-            1. 复制项目根目录的 `.env.example` 为 `.env`
-            2. 编辑 `.env` 文件，填入您的真实API密钥
-            3. 重启Web应用
-            
-            ```bash
-            # .env 文件示例
-            DASHSCOPE_API_KEY=sk-your-dashscope-key
-            FINNHUB_API_KEY=your-finnhub-key
-            ```
-            """)
-        
-        # 显示当前API密钥状态
-        st.subheader("🔍 当前API密钥状态")
-        for key, status in api_status['details'].items():
-            if status['configured']:
-                st.success(f"✅ {key}: {status['display']}")
-            else:
-                st.error(f"❌ {key}: 未配置")
-        
-        return
-    
     # 渲染侧边栏
     config = render_sidebar()
     
@@ -301,6 +260,7 @@ def main():
                 progress_callback = create_progress_callback(progress_display)
 
                 try:
+                    print(f"[DEBUG] config['api_key'] = {repr(config['api_key'])}, type = {type(config['api_key'])}")
                     results = run_stock_analysis(
                         stock_symbol=form_data['stock_symbol'],
                         analysis_date=form_data['analysis_date'],
@@ -309,7 +269,9 @@ def main():
                         llm_provider=config['llm_provider'],
                         market_type=form_data.get('market_type', '美股'),
                         llm_model=config['llm_model'],
-                        progress_callback=progress_callback
+                        progress_callback=progress_callback,
+                        api_key=config['api_key'],
+                        finnhub_api_key=config['finnhub_api_key']
                     )
 
                     # 清除进度显示

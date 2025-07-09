@@ -6,45 +6,26 @@ import streamlit as st
 import os
 
 def render_sidebar():
-    """渲染侧边栏配置"""
-    
+    """
+    渲染侧边栏配置
+    """
     with st.sidebar:
         st.header("🔧 系统配置")
-        
-        # API密钥状态
-        st.subheader("🔑 API密钥状态")
-        
-        dashscope_key = os.getenv("DASHSCOPE_API_KEY")
-        finnhub_key = os.getenv("FINNHUB_API_KEY")
-        
-        if dashscope_key:
-            st.success(f"✅ 阿里百炼: {dashscope_key[:12]}...")
-        else:
-            st.error("❌ 阿里百炼: 未配置")
-        
-        if finnhub_key:
-            st.success(f"✅ 金融数据: {finnhub_key[:12]}...")
-        else:
-            st.error("❌ 金融数据: 未配置")
-        
-        st.markdown("---")
-        
-        # AI模型配置
-        st.subheader("🧠 AI模型配置")
 
         # LLM提供商选择
         llm_provider = st.selectbox(
             "选择LLM提供商",
-            options=["dashscope", "google"],
+            options=["dashscope", "google", "openai"],
             index=0,
             format_func=lambda x: {
                 "dashscope": "阿里百炼 - 国产模型",
-                "google": "Google AI - Gemini模型"
+                "google": "Google AI - Gemini模型",
+                "openai": "OpenAI - GPT模型"
             }[x],
             help="选择AI模型提供商"
         )
 
-        # 根据提供商显示不同的模型选项
+        # 根据提供商显示不同的模型
         if llm_provider == "dashscope":
             llm_model = st.selectbox(
                 "选择阿里百炼模型",
@@ -57,7 +38,9 @@ def render_sidebar():
                 }[x],
                 help="选择用于分析的阿里百炼模型"
             )
-        else:  # google
+            api_key_label = "阿里百炼 API Key"
+            api_key_key = "dashscope_api_key"
+        elif llm_provider == "google":
             llm_model = st.selectbox(
                 "选择Google模型",
                 options=["gemini-2.0-flash", "gemini-1.5-pro", "gemini-1.5-flash"],
@@ -69,7 +52,74 @@ def render_sidebar():
                 }[x],
                 help="选择用于分析的Google Gemini模型"
             )
-        
+            api_key_label = "Google API Key"
+            api_key_key = "google_api_key"
+        else:  # openai
+            llm_model = st.selectbox(
+                "选择OpenAI模型",
+                options=["gpt-3.5-turbo", "gpt-4", "gpt-4o"],
+                index=1,
+                format_func=lambda x: {
+                    "gpt-3.5-turbo": "GPT-3.5 Turbo",
+                    "gpt-4": "GPT-4",
+                    "gpt-4o": "GPT-4o (多模态)"
+                }[x],
+                help="选择用于分析的OpenAI模型"
+            )
+            api_key_label = "OpenAI API Key"
+            api_key_key = "openai_api_key"
+
+        # API Key输入框，失焦时校验
+        def api_key_on_blur():
+            key = st.session_state.get(api_key_key, "")
+            if not key or len(key) < 10:
+                st.session_state[f"{api_key_key}_status"] = (False, "API Key 格式无效")
+            else:
+                st.session_state[f"{api_key_key}_status"] = (True, "API Key 格式有效")
+
+        api_key = st.text_input(
+            api_key_label,
+            value=st.session_state.get(api_key_key, ""),
+            type="password",
+            key=api_key_key,
+            on_change=api_key_on_blur
+        )
+        status = st.session_state.get(f"{api_key_key}_status", (None, ""))
+        if status[0] is True:
+            st.success(f"✅ {api_key_label} 已设置")
+        elif status[0] is False:
+            st.error(f"❌ {api_key_label} 无效: {status[1]}")
+        else:
+            st.info(f"请输入{api_key_label}")
+
+        # FinnHub API Key 输入框（始终显示，必填）
+        def finnhub_key_on_blur():
+            key = st.session_state.get('finnhub_api_key', "")
+            if not key or len(key) < 10:
+                st.session_state['finnhub_api_key_status'] = (False, "API Key 格式无效")
+            else:
+                st.session_state['finnhub_api_key_status'] = (True, "API Key 格式有效")
+
+        finnhub_api_key = st.text_input(
+            "FinnHub API Key (必填)",
+            value=st.session_state.get('finnhub_api_key', ""),
+            type="password",
+            key='finnhub_api_key',
+            on_change=finnhub_key_on_blur
+        )
+        finnhub_status = st.session_state.get('finnhub_api_key_status', (None, ""))
+        if finnhub_status[0] is True:
+            st.success("✅ FinnHub API Key 已设置")
+        elif finnhub_status[0] is False:
+            st.error(f"❌ FinnHub API Key 无效: {finnhub_status[1]}")
+        else:
+            st.info("请输入FinnHub API Key")
+
+        st.markdown("---")
+
+        # AI模型配置
+        st.subheader("🧠 AI模型配置")
+
         # 高级设置
         with st.expander("⚙️ 高级设置"):
             enable_memory = st.checkbox(
@@ -101,7 +151,6 @@ def render_sidebar():
         st.info("""
         **版本**: 1.0.0
         **框架**: Streamlit + LangGraph
-        **AI模型**: 阿里百炼通义千问
         **数据源**: FinnHub API
         """)
         
@@ -112,13 +161,17 @@ def render_sidebar():
         - [📖 使用文档](https://github.com/TauricResearch/TradingAgents)
         - [🐛 问题反馈](https://github.com/TauricResearch/TradingAgents/issues)
         - [💬 讨论社区](https://github.com/TauricResearch/TradingAgents/discussions)
-        - [🔧 API密钥配置](../docs/security/api_keys_security.md)
+        - [🔑 API密钥配置](../docs/security/api_keys_security.md)
         """)
     
+    # 返回所有配置信息
     return {
         'llm_provider': llm_provider,
         'llm_model': llm_model,
         'enable_memory': enable_memory,
         'enable_debug': enable_debug,
-        'max_tokens': max_tokens
+        'max_tokens': max_tokens,
+        'api_key': api_key,
+        'api_key_key': api_key_key,
+        'finnhub_api_key': finnhub_api_key
     }

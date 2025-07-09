@@ -1,18 +1,18 @@
-# Êï∞ÊçÆÂ∫ì‰æùËµñÂåÖ
+#  ˝æ›ø‚“¿¿µ∞¸
 # MongoDB
 pymongo>=4.6.0
-motor>=3.3.0  # ÂºÇÊ≠•MongoDBÈ©±Âä®ÔºàÂèØÈÄâÔºâ
+motor>=3.3.0  # “Ï≤ΩMongoDB«˝∂Ø£®ø…—°£©
 
 # Redis
 redis>=4.0
-hiredis>=2.2.0  # RedisÊÄßËÉΩ‰ºòÂåñÔºàÂèØÈÄâÔºâ
+hiredis>=2.2.0  # Redis–‘ƒ‹”≈ªØ£®ø…—°£©
 
-# Êï∞ÊçÆÂ§ÑÁêÜ
+#  ˝æ›¥¶¿Ì
 pandas>=2.0.0
 numpy>=1.24.0
 
-# Â∫èÂàóÂåñ
-# pickle5>=0.0.11  # Python 3.8+ÂÖºÂÆπ
+# –Ú¡–ªØ
+# pickle5>=0.0.11  # Python 3.8+ºÊ»›
 
 python-dotenv
 yfinance

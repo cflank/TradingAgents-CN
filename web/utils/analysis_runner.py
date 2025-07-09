@@ -64,7 +64,7 @@ def extract_risk_assessment(state):
         print(f"提取风险评估数据时出错: {e}")
         return None
 
-def run_stock_analysis(stock_symbol, analysis_date, analysts, research_depth, llm_provider, llm_model, market_type="美股", progress_callback=None):
+def run_stock_analysis(stock_symbol, analysis_date, analysts, research_depth, llm_provider, llm_model, market_type="美股", progress_callback=None, api_key=None, finnhub_api_key=None):
     """执行股票分析
 
     Args:
@@ -96,10 +96,20 @@ def run_stock_analysis(stock_symbol, analysis_date, analysts, research_depth, ll
 
         update_progress(f"预估分析成本: ¥{estimated_cost:.4f}")
 
+    # 验证API Key（不再强制检查环境变量）
+    if not api_key or len(api_key) < 10:
+        raise ValueError(f"{llm_provider} API Key 未设置或无效，请在侧边栏输入")
+
+    # 验证FinnHub Key（必填）
+    if not finnhub_api_key or len(finnhub_api_key) < 10:
+        raise ValueError("FinnHub API Key 未设置或无效，请在侧边栏输入")
+
     # 验证环境变量
     update_progress("检查环境变量配置...")
-    dashscope_key = os.getenv("DASHSCOPE_API_KEY")
-    finnhub_key = os.getenv("FINNHUB_API_KEY")
+    # 在需要API Key的地方，优先用api_key参数
+    # 例如：os.getenv("DASHSCOPE_API_KEY") -> api_key
+    dashscope_key = api_key if llm_provider == "dashscope" else os.getenv("DASHSCOPE_API_KEY")
+    finnhub_key = finnhub_api_key
 
     print(f"环境变量检查:")
     print(f"  DASHSCOPE_API_KEY: {'已设置' if dashscope_key else '未设置'}")
@@ -171,6 +181,9 @@ def run_stock_analysis(stock_symbol, analysis_date, analysts, research_depth, ll
         elif llm_provider == "google":
             # Google AI不需要backend_url，使用默认的OpenAI格式
             config["backend_url"] = "https://api.openai.com/v1"
+
+        # 明确写入api_key到config
+        config["api_key"] = api_key
 
         # 修复路径问题
         config["data_dir"] = str(project_root / "data")
