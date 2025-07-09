@@ -92,6 +92,26 @@ def render_sidebar():
         else:
             st.info(f"请输入{api_key_label}")
 
+        # LLM API Key 帮助
+        if llm_provider == "dashscope":
+            st.info("""
+            🇨🇳 **阿里百炼 API 密钥帮助**  
+            获取地址: https://dashscope.aliyun.com/  
+            注册阿里云账号 → 开通百炼服务 → 获取API密钥  
+            格式: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            """)
+        elif llm_provider == "openai":
+            st.info("""
+            🌍 **OpenAI API 密钥帮助**  
+            获取地址: https://platform.openai.com/  
+            格式: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            """)
+        elif llm_provider == "google":
+            st.info("""
+            🔍 **Google AI API 密钥帮助**  
+            获取地址: https://ai.google.dev/
+            """)
+
         # FinnHub API Key 输入框（始终显示，必填）
         def finnhub_key_on_blur():
             key = st.session_state.get('finnhub_api_key', "")
@@ -146,23 +166,23 @@ def render_sidebar():
         st.markdown("---")
         
         # 系统信息
-        st.subheader("ℹ️ 系统信息")
+        # st.subheader("ℹ️ 系统信息")
         
-        st.info("""
-        **版本**: 1.0.0
-        **框架**: Streamlit + LangGraph
-        **数据源**: FinnHub API
-        """)
+        # st.info("""
+        # **版本**: 1.0.0
+        # **框架**: Streamlit + LangGraph
+        # **数据源**: FinnHub API
+        # """)
         
-        # 帮助链接
-        st.subheader("📚 帮助资源")
+        # # 帮助链接
+        # st.subheader("📚 帮助资源")
         
-        st.markdown("""
-        - [📖 使用文档](https://github.com/TauricResearch/TradingAgents)
-        - [🐛 问题反馈](https://github.com/TauricResearch/TradingAgents/issues)
-        - [💬 讨论社区](https://github.com/TauricResearch/TradingAgents/discussions)
-        - [🔑 API密钥配置](../docs/security/api_keys_security.md)
-        """)
+        # st.markdown("""
+        # - [📖 使用文档](https://github.com/TauricResearch/TradingAgents)
+        # - [🐛 问题反馈](https://github.com/TauricResearch/TradingAgents/issues)
+        # - [💬 讨论社区](https://github.com/TauricResearch/TradingAgents/discussions)
+        # - [🔑 API密钥配置](../docs/security/api_keys_security.md)
+        # """)
     
     # 返回所有配置信息
     return {
